@@ -1,26 +1,65 @@
-<div class="container">
-  <h1>{{ title }}</h1>
+<mat-sidenav-container class="app-container">
+  <!-- Sidebar -->
+  <mat-sidenav mode="side" opened>
+    <mat-toolbar color="primary" class="sidebar-toolbar">Notes</mat-toolbar>
+    <div class="sidebar-content">
+      <mat-nav-list>
+        <mat-list-item
+          *ngFor="let note of notes; let i = index"
+          (click)="selectNote(i)"
+          class="note-item"
+        >
+          <strong>{{ note.title }}</strong>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteNote(i); $event.stopPropagation()"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-nav-list>
+      <div class="add-note">
+        <h3>Add a Note</h3>
+        <form (ngSubmit)="addNote()">
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Title</mat-label>
+            <input matInput [(ngModel)]="newNote.title" name="title" required />
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Content</mat-label>
+            <textarea
+              matInput
+              [(ngModel)]="newNote.content"
+              name="content"
+              required
+            ></textarea>
+          </mat-form-field>
+          <button mat-raised-button color="primary" type="submit">
+            Add Note
+          </button>
+        </form>
+      </div>
+    </div>
+  </mat-sidenav>
 
-  <ul>
-    <li *ngFor="let note of notes">
-      <strong>{{ note.title }}</strong>
-      <p>{{ note.content }}</p>
-      <button (click)="deleteNote(note.id)">Delete</button>
-    </li>
-  </ul>
-
-  <form (submit)="addNote()">
-    <input
-      [(ngModel)]="newNote.title"
-      placeholder="Note Title"
-      required
-    />
-    <textarea
-      [(ngModel)]="newNote.content"
-      placeholder="Note Content"
-      required
-    ></textarea>
-    <input [(ngModel)]="newNote.classId" placeholder="Class ID" required />
-    <button type="submit">Add Note</button>
-  </form>
-</div>
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="main-toolbar">
+      <span>{{ selectedNote?.title || 'Select a Note' }}</span>
+    </mat-toolbar>
+    <div class="main-content">
+      <mat-card *ngIf="selectedNote" class="note-card">
+        <mat-card-header>
+          <mat-card-title>{{ selectedNote.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ selectedNote.content }}</p>
+        </mat-card-content>
+      </mat-card>
+      <p *ngIf="!selectedNote" class="no-note">
+        No note selected
+      </p>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

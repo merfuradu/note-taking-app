@@ -1,0 +1,84 @@
+/* General layout styles */
+.app-container {
+    height: 100vh;
+    display: flex;
+    background-color: #1e1e1e; /* Matches dark theme */
+    color: white;
+  }
+  
+  /* Sidebar */
+  mat-sidenav {
+    width: 300px;
+    background: #2b2b2b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar-toolbar {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .sidebar-content {
+    padding: 16px;
+  }
+  
+  .note-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #444;
+  }
+  
+  .note-item:hover {
+    background: #383838;
+    cursor: pointer;
+  }
+  
+  .add-note {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: #323232;
+    border-radius: 8px;
+  }
+  
+  /* Main Content */
+  mat-sidenav-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .main-toolbar {
+    z-index: 2;
+    position: sticky;
+    top: 0;
+    background-color: #1976d2;
+    font-size: 20px;
+  }
+  
+  .main-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 16px;
+  }
+  
+  .note-card {
+    width: 80%;
+    max-width: 800px;
+    background-color: #282828;
+    color: white;
+  }
+  
+  .no-note {
+    font-size: 18px;
+    font-style: italic;
+    color: #999;
+  }
+  
