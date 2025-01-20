@@ -71,9 +71,9 @@ export class AppComponent implements OnInit {
   deleteNote(index: number) {
     const note = this.notes[index];
     if (note) {
-      this.http.delete(`${this.apiUrl}/${note.id}`).subscribe(
+      this.http.delete(`${this.apiUrl}/${note.id}`, { responseType: 'text' }).subscribe(
         () => {
-          this.notes.splice(index, 1); // Remove the note from the list
+          this.notes.splice(index, 1); // Update the UI
           if (this.selectedNote?.id === note.id) {
             this.selectedNote = null; // Clear the selected note if it's deleted
           }
@@ -84,6 +84,7 @@ export class AppComponent implements OnInit {
       );
     }
   }
+  
 
   // Select a note to display its content
   selectNote(index: number) {
