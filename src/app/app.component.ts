@@ -9,6 +9,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'app-root',
@@ -23,6 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatInputModule,
     MatCardModule,
     MatIconModule,
+    MatSnackBarModule,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
@@ -32,61 +35,84 @@ export class AppComponent implements OnInit {
   selectedNote: { id: number; title: string; content: string } | null = null;
   newNote = { title: '', content: '' };
 
-  private apiUrl = 'http://localhost:3000/api/notes'; // Backend API URL
+  private apiUrl = 'http://localhost:3000/api/notes'; 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.loadNotes();
   }
 
-  // Fetch all notes from the backend
-  loadNotes() {
-    this.http.get<any[]>(this.apiUrl).subscribe(
-      (data) => {
-        this.notes = data;
+loadNotes() {
+  this.http.get<any[]>(this.apiUrl).subscribe(
+    (data) => {
+      this.notes = data;
+      this.snackBar.open('Notes loaded successfully!', 'Close', { duration: 3000 });
+    },
+    (error) => {
+      console.error('Error fetching notes:', error);
+      this.snackBar.open('Failed to load notes. Please try again.', 'Close', { duration: 3000 });
+    }
+  );
+}
+
+addNote() {
+  if (this.newNote.title && this.newNote.content) {
+    this.http.post<{ id: number; title: string; content: string }>(this.apiUrl, this.newNote).subscribe(
+      (newNote) => {
+        this.notes.push(newNote); 
+        this.newNote = { title: '', content: '' }; 
+        this.snackBar.open('Note added successfully!', 'Close', { duration: 3000 });
       },
       (error) => {
-        console.error('Error fetching notes:', error);
+        console.error('Error adding note:', error);
+        this.snackBar.open('Failed to add note. Please try again.', 'Close', { duration: 3000 });
       }
     );
+  } else {
+    this.snackBar.open('Title and content are required.', 'Close', { duration: 3000 });
   }
+}
 
-  // Add a new note
-  addNote() {
-    if (this.newNote.title && this.newNote.content) {
-      this.http.post<{ id: number; title: string; content: string }>(this.apiUrl, this.newNote).subscribe(
-        (newNote) => {
-          this.notes.push(newNote); // Add the new note to the list
-          this.newNote = { title: '', content: '' }; // Reset the form
-        },
-        (error) => {
-          console.error('Error adding note:', error);
+saveNote() {
+  if (this.selectedNote && this.selectedNote.id) {
+    this.http.put(`${this.apiUrl}/${this.selectedNote.id}`, this.selectedNote).subscribe(
+      () => {
+        this.snackBar.open('Note updated successfully!', 'Close', { duration: 3000, panelClass: ['snackbar-success'], });
+        this.loadNotes();
+      },
+      (error) => {
+        console.error('Error updating note:', error);
+        this.snackBar.open('Failed to update note. Please try again.', 'Close', { duration: 3000 });
+      }
+    );
+  } else {
+    this.snackBar.open('No note selected to update.', 'Close', { duration: 3000 });
+  }
+}
+
+
+deleteNote(index: number) {
+  const note = this.notes[index];
+  if (note) {
+    this.http.delete(`${this.apiUrl}/${note.id}`, { responseType: 'text' }).subscribe(
+      () => {
+        this.notes.splice(index, 1); 
+        if (this.selectedNote?.id === note.id) {
+          this.selectedNote = null; 
         }
-      );
-    }
+        this.snackBar.open('Note deleted successfully!', 'Close', { duration: 3000 });
+      },
+      (error) => {
+        console.error('Error deleting note:', error);
+        this.snackBar.open('Failed to delete note. Please try again.', 'Close', { duration: 3000 });
+      }
+    );
+  } else {
+    this.snackBar.open('Failed to delete note. Note not found.', 'Close', { duration: 3000 });
   }
+}
 
-  // Delete a note by ID
-  deleteNote(index: number) {
-    const note = this.notes[index];
-    if (note) {
-      this.http.delete(`${this.apiUrl}/${note.id}`, { responseType: 'text' }).subscribe(
-        () => {
-          this.notes.splice(index, 1); // Update the UI
-          if (this.selectedNote?.id === note.id) {
-            this.selectedNote = null; // Clear the selected note if it's deleted
-          }
-        },
-        (error) => {
-          console.error('Error deleting note:', error);
-        }
-      );
-    }
-  }
-  
-
-  // Select a note to display its content
   selectNote(index: number) {
     this.selectedNote = this.notes[index];
   }
