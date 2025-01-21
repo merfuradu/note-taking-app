@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
   selectedNote: { id: number; title: string; content: string } | null = null;
   newNote = { title: '', content: '' };
 
-  private apiUrl = 'http://localhost:3000'; 
+  private apiUrl = 'http://localhost:3000/api/notes'; 
 
   constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 
